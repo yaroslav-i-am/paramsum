@@ -30,13 +30,14 @@ bot = telebot.TeleBot(tg_cfg['api_token'], parse_mode='MARKDOWN')
 
 reviews = pd.read_csv(cfg['reviews_path'], index_col=0)['review']
 
-CHAT_ID: Union[str, None] = None
+CHAT_ID: Union[str, None] = tg_cfg['default_chat_id']
 
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
     global CHAT_ID
     CHAT_ID = message.chat.id
+    print(CHAT_ID)
     bot.send_message(message.chat.id, text=f'Hello.')
     help_message()
 
@@ -118,7 +119,7 @@ def process_review_aspect(message):
 
 @bot.message_handler(commands=['save_work'])
 def save_message(message: Union[None, types.Message] = None):
-    global is_initialized
+    global is_initialized, CHAT_ID
     if not is_initialized:
         bot.send_message(CHAT_ID, text=f'First, you should initialize mark-up process by /init.')
         return
@@ -139,7 +140,7 @@ def process_answer(answer: str) -> None:
     return
 
 
-bot.send_message(CHAT_ID, text=f'Bot started.')
+# bot.send_message(CHAT_ID, text=f'Bot started.')
+# help_message()
 print('Bot started.')
-help_message()
 bot.polling(none_stop=True)
