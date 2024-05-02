@@ -59,4 +59,4 @@ with open(id_filename, 'rt') as id_file:
 
 gpt_markup_df = pd.read_csv(cfg['gold_markup_path'])
 gpt_markup_df['gpt_markup'] = gpt_responses
-gpt_markup_df.to_csv(cfg['gpt_markup_path'], index=False)
+gpt_markup_df.to_csv(cfg['silver_markup_path'], index=False)

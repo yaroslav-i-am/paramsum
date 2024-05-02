@@ -23,7 +23,7 @@ logger.add(
     encoding='UTF-8'
 )
 
-gpt_markup = pd.read_csv(cfg['gpt_markup_path'])
+gpt_markup = pd.read_csv(cfg['silver_markup_path'])
 logger.debug(f'{gpt_markup.shape = }')
 
 
@@ -50,4 +50,4 @@ def process_gpt_markup(line: str, logger):
 
 
 gpt_markup['gpt_markup_preprocessed'] = gpt_markup['gpt_markup'].apply(process_gpt_markup, args=(logger,))
-gpt_markup.to_csv(cfg['gpt_markup_preprocessed_path'], index=False)
+gpt_markup.to_csv(cfg['silver_markup_parsed_path'], index=False)
