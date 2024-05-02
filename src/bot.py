@@ -1,15 +1,14 @@
 import datetime
+from random import choice
+from typing import Union
 
 import pandas as pd
 import telebot
-from telebot import types
-from random import choice
-from utils import get_topics
-from typing import Union
-
-import hydra
 from hydra import compose, initialize
 from omegaconf import OmegaConf
+from telebot import types
+
+from utils import get_topics
 
 _version = '1.1'
 _job_name = "telegram_markup"

@@ -1,16 +1,15 @@
+from pathlib import Path
 from time import sleep
 from typing import Dict
 
 import pandas as pd
+from hydra import compose, initialize
 from loguru import logger
+from omegaconf import OmegaConf
 from tqdm import trange
+
 from gpt_requests import gpt_async_request, gpt_answer
 from utils import get_topics
-from pathlib import Path
-
-import hydra
-from hydra import compose, initialize
-from omegaconf import OmegaConf
 
 _version = '1.1'
 _job_name = "gpt_markup_recv"

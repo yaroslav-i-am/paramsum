@@ -15,14 +15,3 @@ def get_topics() -> pd.Series:
     ]
 
     return pd.Series(topics)
-
-
-def bold(s):
-    return f'**{s}**'
-
-
-def ital(s):
-    return f'*{s}*'
-
-
-# print(get_reviews())
