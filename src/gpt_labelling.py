@@ -36,12 +36,12 @@ aspect_adapter['описание игры актёров'] = 'описание �
 
 
 # for i in trange(labelled_aspects.shape[0]):
-for i in trange(100):
+for i in trange(99):
     row = labelled_aspects.iloc[i, :]
     aspect = row['aspect']
     review = row['review']
 
-    response: Dict = gpt_async_request(aspect_adapter[aspect], review, logger)
+    response: Dict = gpt_async_request(aspect_adapter[aspect], cfg['model_type'], review, logger)
     id_file.write(response.get('id') + '\n')
     sleep(1)
 
