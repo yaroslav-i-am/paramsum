@@ -75,7 +75,9 @@ for metric_name in ['bert_score', 'chrf', 'rouge', 'bleu']:
     print(metric_name)
     for sub_metric_name in sub_metrics_mapping[metric_name]:
         metr_values = markup.progress_apply(parse_concat_metrics, axis=1, args=(metric_name, sub_metric_name))
-        new_column_name = f'concat_{sub_metric_name}' if metric_name in sub_metric_name or sub_metric_name in metric_name else f'concat_{sub_metric_name}_{metric_name}'
+        new_column_name = f'concat_{sub_metric_name}' \
+            if (metric_name in sub_metric_name) or (sub_metric_name in metric_name) \
+            else f'concat_{sub_metric_name}_{metric_name}'
         markup[new_column_name] = metr_values
 
 
