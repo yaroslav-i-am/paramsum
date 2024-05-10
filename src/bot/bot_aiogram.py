@@ -20,7 +20,12 @@ from .utils import cfg, tg_cfg
 import os
 print(os.getcwd())
 print(__name__)
-os.chdir(r'D:\Programming\Research\Thesis\paramsum')
+
+import platform 
+if platform.system() == 'Linux':
+    os.chdir(r'/home/pristalovya/documents/paramsum')
+else:
+    os.chdir(r'D:\Programming\Research\Thesis\paramsum')
 
 
 print(OmegaConf.to_yaml(cfg))
