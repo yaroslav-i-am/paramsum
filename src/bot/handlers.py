@@ -372,13 +372,16 @@ async def on_edited_message(message: Message, state: FSMContext):
             text=f"Редактирование было применено к разметке! 🔥\n"
                  f"Не забудьте сохранить изменения.",
         )
+        await state.set_state(MarkupSession.in_progress)
+    elif message.text.startswith('/'):
+        await message.reply(
+            text='Изменения сообщений, содержащих команд, не имеет последствий.'
+        )
     else:
         await message.reply(
             text=f"Редактирование не было применено разметке :(\n"
                  f"Это случилось, потому что сессия, в рамках которой был Ваш ответ, была полностью завершена. ",
         )
-
-    await state.set_state(MarkupSession.in_progress)
 
 
 print('Bot started', file=sys.stderr)
