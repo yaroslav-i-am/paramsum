@@ -9,11 +9,12 @@ import sys
 import pandas as pd
 from aiogram import types, F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, ReactionTypeEmoji
 from aiogram.filters import Command, StateFilter, CommandObject
 from aiogram.utils.markdown import hbold, hcode, hitalic, hblockquote
 from hydra import initialize, compose
-from .utils import MarkupSession, make_special_gold_markup_path, cfg
+from .utils import MarkupSession, make_special_gold_markup_path, cfg, tg_cfg
+from .text import *
 
 from aiogram.types import FSInputFile
 
@@ -34,14 +35,14 @@ reviews_texts: Union[pd.Series, None] = None
 @router.message(Command("accept"))
 async def cmd_accept(message: Message, state: FSMContext, command: CommandObject):
     if __debug__:
+        print(command.args)
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
             parse_mode=None
         )
 
-    print(command.args)
     if command.args is not None and command.args == 'restart':
-        await state.set_state(None)
+        await state.set_state(MarkupSession.initialized)
         await message.answer(
             text='OK',
         )
@@ -58,19 +59,30 @@ async def cmd_start(message: Message, state: FSMContext):
 
     response_text = ''
     if await state.get_state() in (MarkupSession.initialized, MarkupSession.just_start):
-        response_text = 'Вы начали сначала.'
+        response_text = 'Вы начали сначала. \nИспользуйте /init, чтобы проинициализировать сессию разметки!'
+        await message.answer(
+            text=response_text,
+        )
 
     elif await state.get_state() == MarkupSession.in_progress:
         response_text = 'У Вас есть несохранённый прогресс. Если Вы действительно хотите вернуться в начало, ' \
-                        f'используйте команду {hbold("/accept restart")} для подтверждения.\n\n' \
-                        f'В противном случае, продолжайте размечать данные.'
+                        f'используйте команду {hcode("/accept restart")} для подтверждения.\n\n' \
+                        f'В противном случае продолжайте работу .'
         await message.answer(
             text=response_text,
         )
         return
 
     elif await state.get_state() is None:
-        response_text = 'Привет!'
+        await message.answer(
+            text=f'Приветствую!',
+        )
+        await message.answer(
+            text=info_message,
+        )
+        await message.answer(
+            text=help_message,
+        )
 
     await state.set_data(
         {
@@ -84,13 +96,11 @@ async def cmd_start(message: Message, state: FSMContext):
         }
     )
 
-    await message.answer(
-        text=response_text,
-    )
     await state.set_state(MarkupSession.just_start)
+    await message.react([ReactionTypeEmoji(emoji="👏")])
 
 
-@router.message(Command('help', 'man'))
+@router.message(Command('info'))
 async def cmd_help(message: Message, state: FSMContext):
     if __debug__:
         await message.answer(
@@ -99,7 +109,20 @@ async def cmd_help(message: Message, state: FSMContext):
         )
 
     await message.answer(
-        text="Это сообщение поможет разобраться с ботом.",
+        text=info_message,
+    )
+
+
+@router.message(Command('help'))
+async def cmd_help(message: Message, state: FSMContext):
+    if __debug__:
+        await message.answer(
+            text=str(await state.get_state()) + '\n' + str(await state.get_data()),
+            parse_mode=None
+        )
+
+    await message.answer(
+        text=help_message,
     )
 
 
@@ -133,8 +156,9 @@ async def cmd_init(message: Message, state: FSMContext):
         text=f"Результат Вашей работы будет сохранён в файл: {hblockquote(data['current_gold_markup_path'].parts[-1])}",
     )
 
+    await message.react([ReactionTypeEmoji(emoji="🎉")])
     await message.answer(
-        text="Вы готовы к разметке данных.",
+        text="Вы готовы к разметке данных. /start_markup, чтобы начать.",
     )
     await state.set_state(MarkupSession.initialized)
 
@@ -148,7 +172,7 @@ async def cmd_init(message: Message, state: FSMContext):
         )
 
     await message.answer(
-        text="Ваша сессия уже была проинициализирована.",
+        text="Ваша сессия уже была проинициализирована. /start_markup, чтобы начать разметку.",
     )
 
 
@@ -226,10 +250,19 @@ async def cmd_save_progress(message: Message, state: FSMContext):
         }
     )
     await message.answer(
-        text="Ваша разметка успешно сохранена.",
+        text="Ваша разметка успешно сохранена!",
     )
 
-    await message.answer_document(FSInputFile(data['current_gold_markup_path']))
+    await message.react([ReactionTypeEmoji(emoji="🔥")])
+
+    await message.answer_document(
+        FSInputFile(data['current_gold_markup_path']),
+        caption='Файл никуда отправлять не нужно. Спасибо! :)'
+    )
+
+    await message.answer(
+        text="Большая благодарность за помощь и участие в разметке!",
+    )
 
     await state.set_state(MarkupSession.initialized)
 
@@ -264,13 +297,10 @@ async def cmd_start_markup_progress(message: Message, state: FSMContext):
 
     asp_review, topic, review = None, None, None
 
-
-
-
     if data['cur_aspects'] is None or len(data['cur_aspects']) == 0:
         data['cur_aspects'] = get_topics()
 
-        while review is None or len(review) > 4090:
+        while review is None or len(review) > tg_cfg['max_message_len'] - get_topics().str.len().max():
             review = choice(reviews_texts)
 
         data['cur_review'] = review
@@ -287,7 +317,7 @@ async def cmd_start_markup_progress(message: Message, state: FSMContext):
     )
 
     await message.answer(
-        text=f'Длина следующего сообщения {len(asp_review)} символов.',
+        text=f'Длина рецензии ≈ {len(asp_review)} символов.',
     )
 
     await message.answer(
@@ -304,7 +334,21 @@ async def cmd_start_markup_early(message: Message, state: FSMContext):
         )
 
     await message.answer(
-        text=f"Перед началом разметки необходимо проинициализировать сессию командой {hcode('/init')}.",
+        text=f"Перед началом разметки необходимо проинициализировать сессию командой /init.",
+    )
+
+
+@router.message(StateFilter(None))
+async def cmd_some_start(message: Message, state: FSMContext):
+    if __debug__:
+        await message.answer(
+            text=str(await state.get_state()) + '\n' + str(await state.get_data()),
+            parse_mode=None
+        )
+
+    await message.react([ReactionTypeEmoji(emoji="👏")])
+    await message.answer(
+        text=f"Спасибо, что пришли! Начните с команды /start.",
     )
 
 
