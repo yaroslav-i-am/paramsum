@@ -363,10 +363,15 @@ async def on_edited_message(message: Message, state: FSMContext):
         )
 
     data = await state.get_data()
-    if message.message_id in data['ready_markup_df']['message_id'].values:
+
+    # print(data['ready_markup_df']['message_id'].values)
+    # print(data['ready_markup_df']['message_id'])
+    print(data['ready_markup_df'])
+
+    if data['ready_markup_df'] is not None and message.message_id in data['ready_markup_df']['message_id'].values:
         ind = data['ready_markup_df'].query('message_id == @message.message_id').index
 
-        data['ready_markup_df']['answers'].loc[ind] = set(message.text.split('\n'))
+        data['ready_markup_df'].loc[ind, "answers"] = set(message.text.split('\n'))
 
         await message.reply(
             text=f"Редактирование было применено к разметке! 🔥\n"
