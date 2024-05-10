@@ -20,7 +20,7 @@ from .utils import cfg, tg_cfg
 import os
 print(os.getcwd())
 print(__name__)
-
+os.chdir('/home/pristalovya/documents/paramsum')
 
 print(OmegaConf.to_yaml(cfg))
 
