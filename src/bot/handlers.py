@@ -140,7 +140,8 @@ async def cmd_init(message: Message, state: FSMContext):
     await state.update_data(
         {
             'is_initialized': True,
-            'ready_markup_df': pd.DataFrame(columns=pd.read_csv(cfg['gold_markup_path'], nrows=0).columns),
+            'ready_markup_df': pd.DataFrame(columns=pd.read_csv(cfg['gold_markup_path'], nrows=0).columns.tolist() +
+                                            ['message_id']),
             'current_gold_markup_path': make_special_gold_markup_path(cfg['gold_markup_path'],
                                                                       message.from_user.full_name,
                                                                       str(message.from_user.id))
@@ -234,7 +235,7 @@ async def cmd_save_progress(message: Message, state: FSMContext):
 
         return
 
-    if len(data['ready_markup_df']) > 0:
+    if len(data['ready_markup_df']) > 0 and data['ready_markup_df'].iloc[-1, -1] is None:
         data['ready_markup_df'].drop(index=len(data['ready_markup_df']) - 1, inplace=True)
     data['ready_markup_df'].to_csv(data['current_gold_markup_path'], index=False)
 
@@ -261,7 +262,7 @@ async def cmd_save_progress(message: Message, state: FSMContext):
     )
 
     await message.answer(
-        text="Большая благодарность за помощь и участие в разметке!",
+        text="Большая благодарность за помощь и участие в проекте!",
     )
 
     await state.set_state(MarkupSession.initialized)
@@ -293,7 +294,8 @@ async def cmd_start_markup_progress(message: Message, state: FSMContext):
     if not message.text.startswith('/'):
         prev_answer = set(message.text.split('\n'))
         print(prev_answer)
-        data['ready_markup_df'].iat[-1, -1] = prev_answer
+        data['ready_markup_df'].iat[-1, -2] = prev_answer
+        data['ready_markup_df'].iat[-1, -1] = message.message_id
 
     asp_review, topic, review = None, None, None
 
@@ -310,14 +312,14 @@ async def cmd_start_markup_progress(message: Message, state: FSMContext):
 
     asp_review = f'{hbold(topic.capitalize())}\n\n{data["cur_review"]}'
 
-    data['ready_markup_df'].loc[len(data['ready_markup_df'].index)] = [topic, data['cur_review'], None]
+    data['ready_markup_df'].loc[len(data['ready_markup_df'].index)] = [topic, data['cur_review'], None, None]
 
     await state.update_data(
         data
     )
 
     await message.answer(
-        text=f'Длина рецензии ≈ {len(asp_review)} символов.',
+        text=f'Длина рецензии в символах: ≈{len(asp_review)}.',
     )
 
     await message.answer(
@@ -350,6 +352,33 @@ async def cmd_some_start(message: Message, state: FSMContext):
     await message.answer(
         text=f"Спасибо, что пришли! Начните с команды /start.",
     )
+
+
+@router.edited_message()
+async def on_edited_message(message: Message, state: FSMContext):
+    if __debug__:
+        await message.answer(
+            text=str(await state.get_state()) + '\n' + str(await state.get_data()),
+            parse_mode=None
+        )
+
+    data = await state.get_data()
+    if message.message_id in data['ready_markup_df']['message_id'].values:
+        ind = data['ready_markup_df'].query('message_id == @message.message_id').index
+
+        data['ready_markup_df']['answers'].loc[ind] = set(message.text.split('\n'))
+
+        await message.reply(
+            text=f"Редактирование было применено к разметке! 🔥\n"
+                 f"Не забудьте сохранить изменения.",
+        )
+    else:
+        await message.reply(
+            text=f"Редактирование не было применено разметке :(\n"
+                 f"Это случилось, потому что сессия, в рамках которой был Ваш ответ, была полностью завершена. ",
+        )
+
+    await state.set_state(MarkupSession.in_progress)
 
 
 print('Bot started', file=sys.stderr)
