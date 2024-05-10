@@ -1,4 +1,11 @@
 reviews_path: 'data/reviews.csv'
+model_type: 'gpt-lite'
+#model_type: 'gpt'
+#model_type: 'squad'
 project_dir: 'D:\Programming\Research\Thesis\paramsum'
 gold_markup_path: 'data/working_dir/ready_markup.csv'
-logs_dir: 'logs/'
+silver_markup_path: 'data/working_dir/${model_type}/markup.csv'
+silver_markup_parsed_path: 'data/working_dir/${model_type}/markup_preprocessed.csv'
+silver_markup_parsed_with_metrics_path: 'data/working_dir/${model_type}/markup_preprocessed_with_metrics.csv'
+logging_dir: 'logs/${model_type}'
+max_message_len: 4096
