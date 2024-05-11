@@ -12,6 +12,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReactionTypeEmoji
 from aiogram.filters import Command, StateFilter, CommandObject
 from aiogram.utils.markdown import hbold, hcode, hitalic, hblockquote
+from aiogram.utils.media_group import MediaGroupBuilder
 from hydra import initialize, compose
 from .utils import MarkupSession, make_special_gold_markup_path, cfg, tg_cfg
 from .text import *
@@ -86,12 +87,8 @@ async def cmd_start(message: Message, state: FSMContext):
         await message.answer(
             text=f'Приветствую!',
         )
-        await message.answer(
-            text=info_message,
-        )
-        await message.answer(
-            text=help_message,
-        )
+        await cmd_info(message, state)
+        await cmd_help(message, state)
 
     await state.set_data(
         {
@@ -110,7 +107,7 @@ async def cmd_start(message: Message, state: FSMContext):
 
 
 @router.message(Command('info'))
-async def cmd_help(message: Message, state: FSMContext):
+async def cmd_info(message: Message, state: FSMContext):
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -119,6 +116,30 @@ async def cmd_help(message: Message, state: FSMContext):
 
     await message.answer(
         text=info_message,
+    )
+    album_builder = MediaGroupBuilder(
+        caption="Примеры разметки."
+    )
+
+
+    album_builder.add(
+        type="photo",
+        media=FSInputFile("src/bot/assets/f1.png")
+    )
+    album_builder.add(
+        type="photo",
+        media=FSInputFile("src/bot/assets/f2.png")
+    )
+    album_builder.add(
+        type="photo",
+        media=FSInputFile("src/bot/assets/f3.png")
+    )
+    album_builder.add(
+        type="photo",
+        media=FSInputFile("src/bot/assets/f4.png")
+    )
+    await message.answer_media_group(
+        media=album_builder.build()
     )
 
 
