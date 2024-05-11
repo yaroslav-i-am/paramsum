@@ -124,19 +124,19 @@ async def cmd_info(message: Message, state: FSMContext):
 
     album_builder.add(
         type="photo",
-        media=FSInputFile("src/bot/assets/Общее мнение.png")
+        media=FSInputFile("src/bot/assets/f1.png")
     )
     album_builder.add(
         type="photo",
-        media=FSInputFile("src/bot/assets/Мнение о режиссёре.png")
+        media=FSInputFile("src/bot/assets/f2.png")
     )
     album_builder.add(
         type="photo",
-        media=FSInputFile("src/bot/assets/Личность персонажей.png")
+        media=FSInputFile("src/bot/assets/f3.png")
     )
     album_builder.add(
         type="photo",
-        media=FSInputFile("src/bot/assets/Личность персонажей2.png")
+        media=FSInputFile("src/bot/assets/f4.png")
     )
     await message.answer_media_group(
         media=album_builder.build()
