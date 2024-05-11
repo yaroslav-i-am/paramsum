@@ -22,6 +22,14 @@ import os
 
 from ..utils import get_topics
 
+from loguru import logger
+
+logger.add(
+    Path(cfg['logging_dir'], 'handlers.log'),
+    rotation='100 MB',
+    encoding='UTF-8'
+)
+
 print(os.getcwd())
 print(__name__)
 
@@ -51,6 +59,7 @@ async def cmd_accept(message: Message, state: FSMContext, command: CommandObject
 
 @router.message(Command("start"))
 async def cmd_start(message: Message, state: FSMContext):
+    logger.info(f'User {message.from_user.full_name} by id {message.from_user.id} started (or tried to) Bot-interaction.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -128,6 +137,8 @@ async def cmd_help(message: Message, state: FSMContext):
 
 @router.message(StateFilter(MarkupSession.just_start), Command('init'))
 async def cmd_init(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} attempted to init from start.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -179,6 +190,8 @@ async def cmd_init(message: Message, state: FSMContext):
 
 @router.message(StateFilter(MarkupSession.initialized), Command('start_markup'))
 async def cmd_start_markup_intro(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} started markup from initialized.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -213,6 +226,8 @@ async def cmd_start_markup_intro(message: Message, state: FSMContext):
 
 @router.message(StateFilter(MarkupSession.in_progress), Command('save_progress'))
 async def cmd_save_progress(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} attempted to save existing progress.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -283,6 +298,8 @@ async def cmd_save_progress(message: Message, state: FSMContext):
 
 @router.message(StateFilter(MarkupSession.in_progress))
 async def cmd_start_markup_progress(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} attempted to have progress in markup.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -356,6 +373,8 @@ async def cmd_some_start(message: Message, state: FSMContext):
 
 @router.edited_message()
 async def on_edited_message(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} attempted to edit some message')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
