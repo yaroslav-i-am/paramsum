@@ -43,6 +43,8 @@ reviews_texts: Union[pd.Series, None] = None
 
 @router.message(Command("accept"))
 async def cmd_accept(message: Message, state: FSMContext, command: CommandObject):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} Accepted restart.')
     if __debug__:
         print(command.args)
         await message.answer(
@@ -67,7 +69,6 @@ async def cmd_start(message: Message, state: FSMContext):
             parse_mode=None
         )
 
-    response_text = ''
     if await state.get_state() in (MarkupSession.initialized, MarkupSession.just_start):
         response_text = 'Вы начали сначала. \nИспользуйте /init, чтобы проинициализировать сессию разметки!'
         await message.answer(
@@ -120,7 +121,6 @@ async def cmd_info(message: Message, state: FSMContext):
     album_builder = MediaGroupBuilder(
         caption="Примеры разметки."
     )
-
 
     album_builder.add(
         type="photo",
@@ -198,6 +198,8 @@ async def cmd_init(message: Message, state: FSMContext):
 
 @router.message(StateFilter(MarkupSession.initialized), Command('init'))
 async def cmd_init(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} attempted to init from initialized.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -231,6 +233,9 @@ async def cmd_start_markup_intro(message: Message, state: FSMContext):
 
 @router.message(StateFilter(MarkupSession.in_progress), Command('start_markup', 'init'))
 async def cmd_start_markup_intro(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} attempted to `start_markup` or `init` from '
+        f'progress.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -273,7 +278,10 @@ async def cmd_save_progress(message: Message, state: FSMContext):
 
     if len(data['ready_markup_df']) > 0 and data['ready_markup_df'].iloc[-1, -1] is None:
         data['ready_markup_df'].drop(index=len(data['ready_markup_df']) - 1, inplace=True)
-    data['ready_markup_df'].to_csv(data['current_gold_markup_path'], index=False)
+    try:
+        data['ready_markup_df'].to_csv(data['current_gold_markup_path'], index=False)
+    except Exception as e:
+        logger.warning(f"An error occurred. Save failed. Error: {e}.")
 
     await state.update_data(
         {
@@ -303,6 +311,9 @@ async def cmd_save_progress(message: Message, state: FSMContext):
 
     await state.set_state(MarkupSession.initialized)
 
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} SAVE OK.')
+
 
 @router.message(~StateFilter(MarkupSession.in_progress), Command('save_progress'))
 async def cmd_save_progress(message: Message, state: FSMContext):
@@ -331,13 +342,19 @@ async def cmd_start_markup_progress(message: Message, state: FSMContext):
 
     if not message.text.startswith('/'):
         prev_answer = set(message.text.split('\n'))
-        print(prev_answer)
-        data['ready_markup_df'].iat[-1, -2] = prev_answer
-        data['ready_markup_df'].iat[-1, -1] = message.message_id
+        print(data['ready_markup_df'].iat[-1, 'aspect'], prev_answer)
+        data['ready_markup_df'].iat[-1, 'answers'] = prev_answer
+        data['ready_markup_df'].iat[-1, 'message_id'] = message.message_id
 
     asp_review, topic, review = None, None, None
 
     if data['cur_aspects'] is None or len(data['cur_aspects']) == 0:
+        if len(data['cur_aspects']) == 0:
+            try:
+                data['ready_markup_df'].to_csv(data['current_gold_markup_path'], index=False)
+            except Exception as e:
+                logger.warning(f"An error occurred. Autosave failed. Error: {e}.")
+
         data['cur_aspects'] = get_topics()
 
         while review is None or len(review) > tg_cfg['max_message_len'] - get_topics().str.len().max():
@@ -367,6 +384,8 @@ async def cmd_start_markup_progress(message: Message, state: FSMContext):
 
 @router.message(StateFilter(MarkupSession.just_start), Command('start_markup'))
 async def cmd_start_markup_early(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} attempted to have early progress in markup.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
@@ -380,6 +399,8 @@ async def cmd_start_markup_early(message: Message, state: FSMContext):
 
 @router.message(StateFilter(None))
 async def cmd_some_start(message: Message, state: FSMContext):
+    logger.info(
+        f'User {message.from_user.full_name} by id {message.from_user.id} started not from start.')
     if __debug__:
         await message.answer(
             text=str(await state.get_state()) + '\n' + str(await state.get_data()),
