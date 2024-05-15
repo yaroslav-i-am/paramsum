@@ -10,18 +10,17 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 
 from .utils import make_row_keyboard
-from .handlers import router
+from .handlers import router, cfg, tg_cfg
 
 from hydra import compose, initialize
 from omegaconf import OmegaConf
-from .utils import cfg, tg_cfg
 
 
 import os
 print(os.getcwd())
 print(__name__)
 
-import platform 
+import platform
 if platform.system() == 'Linux':
     os.chdir(r'/home/pristalovya/documents/paramsum')
 else:
