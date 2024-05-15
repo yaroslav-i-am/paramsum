@@ -9,7 +9,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 
-from .utils import make_row_keyboard
 from .handlers import router, cfg, tg_cfg
 
 from hydra import compose, initialize
