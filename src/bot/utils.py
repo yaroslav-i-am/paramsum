@@ -17,16 +17,6 @@ with initialize(version_base=_version, config_path="../../cfg", job_name=_job_na
     tg_cfg = compose(config_name="telegram_config.yaml")
 
 
-def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
-    """
-    Создаёт реплай-клавиатуру с кнопками в один ряд
-    :param items: список текстов для кнопок
-    :return: объект реплай-клавиатуры
-    """
-    row = [KeyboardButton(text=item) for item in items]
-    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
-
-
 class MarkupSession(StatesGroup):
     just_start = State()
     initialized = State()
