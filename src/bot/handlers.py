@@ -342,16 +342,17 @@ async def cmd_start_markup_progress(message: Message, state: FSMContext):
 
     if not message.text.startswith('/'):
         prev_answer = set(message.text.split('\n'))
-        print(data['ready_markup_df'].iat[-1, 'aspect'], prev_answer)
-        data['ready_markup_df'].iat[-1, 'answers'] = prev_answer
-        data['ready_markup_df'].iat[-1, 'message_id'] = message.message_id
+        logger.info(f"{message.from_user.full_name}\n{data['ready_markup_df'].iat[-1, 0]}:\n{prev_answer}")
+        data['ready_markup_df'].iat[-1, -2] = prev_answer
+        data['ready_markup_df'].iat[-1, -1] = message.message_id
 
     asp_review, topic, review = None, None, None
 
     if data['cur_aspects'] is None or len(data['cur_aspects']) == 0:
-        if len(data['cur_aspects']) == 0:
+        if data['cur_aspects'] is not  None and len(data['cur_aspects']) == 0:
             try:
                 data['ready_markup_df'].to_csv(data['current_gold_markup_path'], index=False)
+                logger.info(f"User {message.from_user.full_name} by id {message.from_user.id} AUTOSAVE OK")
             except Exception as e:
                 logger.warning(f"An error occurred. Autosave failed. Error: {e}.")
 
