@@ -175,7 +175,6 @@ async def cmd_init(message: Message, state: FSMContext):
             'ready_markup_df': pd.DataFrame(columns=pd.read_csv(cfg['gold_markup_path'], nrows=0).columns.tolist() +
                                             ['message_id']),
             'current_gold_markup_path': make_special_gold_markup_path(cfg['gold_markup_path'],
-                                                                      message.from_user.full_name,
                                                                       str(message.from_user.id))
         }
     )
@@ -287,7 +286,6 @@ async def cmd_save_progress(message: Message, state: FSMContext):
         {
             'ready_markup_df': data['ready_markup_df'],  # Во избежание потери информации.
             'current_gold_markup_path': make_special_gold_markup_path(cfg['gold_markup_path'],
-                                                                      message.from_user.full_name,
                                                                       str(message.from_user.id)),
             'cur_review': None,
             'cur_aspects': None,

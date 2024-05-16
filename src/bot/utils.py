@@ -23,10 +23,10 @@ class MarkupSession(StatesGroup):
     in_progress = State()
 
 
-def make_special_gold_markup_path(gold_markup_path: str, full_name: str, user_id: str) -> Path:
+def make_special_gold_markup_path(gold_markup_path: str, user_id: str) -> Path:
     parts = list(Path(gold_markup_path).parts)
     parts.insert(-1, 'crowd_markups')
-    parts[-1] = f'{user_id}_{datetime.datetime.now().strftime("%H-%M-%S_%d%m%Y")}_{parts[-1]}'
+    parts[-1] = f'{user_id}_{datetime.datetime.now().strftime("%Y%m%d_%H-%M-%S")}_{parts[-1]}'
     path = str(Path(*parts))
     path = re.sub(r'\s', '_', path)
     return Path(path)
