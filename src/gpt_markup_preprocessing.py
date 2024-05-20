@@ -37,7 +37,7 @@ def process_gpt_markup(line: str, logger):
         line = list(map(lambda el: re.sub(r'^— ', r'', el), line))
         line = list(map(lambda el: el.strip(), line))
 
-        line = set(line)
+        # line = set(line)
 
     logger.debug('FINAL LINE')
     logger.debug(line)
