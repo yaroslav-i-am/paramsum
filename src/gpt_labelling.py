@@ -24,7 +24,7 @@ logger.add(
     encoding='UTF-8'
 )
 
-id_filename = '../async_ids.txt'
+id_filename = 'async_ids.txt'
 id_file = open(id_filename, 'wt')
 
 labelled_aspects = pd.read_csv(cfg['gold_markup_path'])
@@ -40,14 +40,14 @@ for i in trange(99):
     aspect = row['aspect']
     review = row['review']
 
-    response: Dict = gpt_async_request(aspect_adapter[aspect], cfg['model_type'], review, logger)
+    response: Dict = gpt_async_request(aspect_adapter[aspect], cfg['model_type'], review, float(cfg['temperature']), logger)
     id_file.write(response.get('id') + '\n')
     sleep(1)
 
 id_file.close()
 
 logger.debug('Waiting for the answer...')
-sleep(60)
+sleep(120)
 
 gpt_responses = []
 

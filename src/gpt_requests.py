@@ -3,12 +3,12 @@ from typing import Dict
 import requests
 
 
-def gpt_async_request(aspect: str, model_subname: str, review: str, logger) -> Dict:
+def gpt_async_request(aspect: str, model_subname: str, review: str, temperature: float, logger) -> Dict:
     prompt = {
         "modelUri": f"gpt://b1gadu21mkrkragvdrks/yandex{model_subname}/latest",
         "completionOptions": {
             "stream": False,
-            "temperature": 0.05,
+            "temperature": temperature,
             "maxTokens": "2000"
         },
 
