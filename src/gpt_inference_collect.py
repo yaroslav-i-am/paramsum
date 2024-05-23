@@ -25,35 +25,34 @@ if __name__ == '__main__':
     print(OmegaConf.to_yaml(cfg))
 
     logger.add(
-        Path(cfg['logging_dir'], 'gpt_inference.log'),
-        rotation='100 MB',
+        Path(cfg['logging_dir'], 'gpt_inference_collect.log'),
+        rotation='2048 MB',
         encoding='UTF-8'
     )
 
     id_filename = 'async_inference_ids.txt'
-    gpt_responses = []
+    gpt_markup = pd.read_csv(cfg['part_out_path'])
 
-    with open(id_filename, 'rt') as id_file:
-        for req_id in tqdm(id_file.readlines()):
-            try:
-                answer: str = gpt_answer(req_id.strip(), yagpt_cfg['api-key'], logger)
+    to_answer = []
 
-            except Exception as e:
-                logger.error(f'{e}')
-                logger.error(f'{req_id}')
-                answer = None
+    for i in tqdm(range(gpt_markup.shape[0])):
+        req_id: str = gpt_markup.iloc[i]['gpt_markup'].strip()
 
-            with open('responses.txt', 'at') as f:
-                f.write(repr(answer) + '\n')
-            gpt_responses.append(answer)
+        if not req_id.startswith('d7q'):
+            logger.debug('Answer exists')
+            continue
 
-    # temp_gpt_markup_df = pd.read_csv(cfg['part_out_path'])
-    temp_gpt_markup_df = pd.DataFrame(columns=['ids', 'review', 'aspect', 'gpt_markup'])
+        try:
+            answer: str = gpt_answer(req_id, yagpt_cfg['api-key'], logger)
+        except Exception as e:
+            logger.error(f'{e}')
+            logger.error(f'{req_id}')
+            to_answer.append(req_id)
 
-    temp_gpt_markup_df['gpt_markup'] = gpt_responses
-    with open(id_filename, 'rt') as id_file:
-        temp_gpt_markup_df['ids'] = id_file.readlines()
-    temp_gpt_markup_df.to_csv(cfg['part_out_path'], index=False)
-    # temp_gpt_markup_df.to_csv(cfg['out_path'], index=False, mode='a' if os.path.exists(cfg['out_path']) else 'w')
+        else:
+            gpt_markup.iloc[i]['gpt_markup'] = answer
+            if i % 100 == 0:
+                gpt_markup.to_csv(cfg['out_path'], index=False)
 
-    # os.remove(id_filename)
+    os.remove(id_filename)
+    print(*to_answer, sep='\n')

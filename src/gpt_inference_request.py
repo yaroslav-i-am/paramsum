@@ -36,18 +36,18 @@ if __name__ == '__main__':
     aspect_adapter = {v: v for v in get_topics()}
     aspect_adapter['описание игры актёров'] = 'описание игры актёров, мнение об актёре или то, как получился персонаж'
 
-    N_REVIEWS_FROM_LABEL = 139
-    N_REVIEWS_TO_LABEL = 2007
-
-    reviews_to_label = []
-    aspects_to_extract = []
-    gpt_markup = []
+    N_REVIEWS_FROM_LABEL = 2
+    N_REVIEWS_TO_LABEL = 1000
 
     id_filename = 'async_inference_ids.txt'
 
     model_id = yagpt_cfg['model_id'] if 'finetuned' in cfg['model_type'] else None
 
     for i in trange(N_REVIEWS_FROM_LABEL, N_REVIEWS_TO_LABEL):
+        reviews_to_label = []
+        aspects_to_extract = []
+        gpt_markup = []
+
         review = all_reviews.iloc[i]['review']
         for aspect in get_topics().tolist():
 
@@ -69,14 +69,14 @@ if __name__ == '__main__':
 
             reviews_to_label.append(review)
             aspects_to_extract.append(aspect)
-            gpt_markup.append(None)
+            gpt_markup.append(response_id)
             sleep(1)
 
-    out_markups_df = pd.DataFrame(data={
-        'review': reviews_to_label,
-        'aspect': aspects_to_extract,
-        'gpt_markup': gpt_markup
-    })
-    out_markups_df.to_csv(cfg['part_out_path'], index=False)
+        out_markups_df = pd.DataFrame(data={
+            'review': reviews_to_label,
+            'aspect': aspects_to_extract,
+            'gpt_markup': gpt_markup
+        })
+        out_markups_df.to_csv(cfg['out_path'], index=False, mode='a')
 
     logger.debug(f'{N_REVIEWS_FROM_LABEL} - {N_REVIEWS_TO_LABEL} reviews have been requested to labelling.')
