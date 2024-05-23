@@ -37,6 +37,10 @@ def process_gpt_markup(line: str, logger):
         line = list(map(lambda el: re.sub(r'^— ', r'', el), line))
         line = list(map(lambda el: el.strip(), line))
 
+        line = list(filter(lambda aspect_line: len(aspect_line.split()) >= 2, line))
+        if not line:
+            line = ['<SOME_ASPECT>']
+
         # line = set(line)
 
     logger.debug('FINAL LINE')
