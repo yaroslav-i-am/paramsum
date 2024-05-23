@@ -3,9 +3,27 @@ from typing import Dict
 import requests
 
 
-def gpt_async_request(aspect: str, model_subname: str, review: str, temperature: float, logger) -> Dict:
+def gpt_async_request(
+        aspect: str,
+        model_subname: str,
+        review: str,
+        temperature: float,
+        api_key: str,
+        folder_id: str,
+        logger,
+        model_id: str = None,
+) -> Dict:
+    if 'finetuned' in model_subname:
+        if model_id is None:
+            raise AttributeError('Model is finetuned but model_id is not provided.')
+        # Finetuned YaGPT
+        model_uri = f"ds://{model_id}"
+    else:
+        # Default YaGPT
+        model_uri = f"gpt://{folder_id}/yandex{model_subname}/latest",
+
     prompt = {
-        "modelUri": f"gpt://b1gadu21mkrkragvdrks/yandex{model_subname}/latest",
+        "modelUri": model_uri,
         "completionOptions": {
             "stream": False,
             "temperature": temperature,
@@ -35,7 +53,7 @@ def gpt_async_request(aspect: str, model_subname: str, review: str, temperature:
     url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completionAsync"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Api-Key AQVN0i1MKvzEFTe8os1PTN6D9zZ0RqTnJkXNh99y"
+        "Authorization": f"Api-Key {api_key}"
     }
 
     response = requests.post(url, headers=headers, json=prompt)
@@ -44,11 +62,11 @@ def gpt_async_request(aspect: str, model_subname: str, review: str, temperature:
     return response.json()
 
 
-def gpt_answer(request_id: str, logger) -> Dict:
+def gpt_answer(request_id: str, api_key: str, logger) -> str:
     url = "https://llm.api.cloud.yandex.net/operations/" + request_id
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Api-Key AQVN0i1MKvzEFTe8os1PTN6D9zZ0RqTnJkXNh99y"
+        "Authorization": f"Api-Key {api_key}"
     }
 
     response = requests.get(url, headers=headers)
