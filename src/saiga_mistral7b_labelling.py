@@ -62,7 +62,9 @@ logger.debug(f'Model transferred to CUDA.')
 # Определяем токенайзер
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=False)
 generation_config = GenerationConfig.from_pretrained(MODEL_NAME)
-
+print(generation_config)
+generation_config.max_new_tokens = 2000
+generation_config.temperature = cfg['temperature']
 
 # Функция для обработки запросов
 def generate(model, tokenizer, prompt, generation_config):
