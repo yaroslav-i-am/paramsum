@@ -160,5 +160,6 @@ cython_debug/
 #.idea/
 
 data/
-cfg/
+cfg/yagpt_config.yaml
+cfg/telegram_config.yaml
 logs/
