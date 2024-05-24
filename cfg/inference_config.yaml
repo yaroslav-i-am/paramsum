@@ -1,0 +1,9 @@
+reviews_path: 'data/clean_reviews.csv'
+model_type: 'gpt-finetuned'
+project_dir: 'D:\Programming\Research\Thesis\paramsum'
+silver_markup_path: 'data/out_markup.csv'
+part_out_path: 'data/part_out_markup.csv'
+silver_markup_parsed_path: 'data/preprocessed_out_markup.csv'
+logging_dir: 'logs/${model_type}'
+temperature: 0.05
+
