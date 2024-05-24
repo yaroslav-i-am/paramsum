@@ -33,6 +33,9 @@ if __name__ == '__main__':
     id_filename = 'async_inference_ids.txt'
     gpt_markup = pd.read_csv(cfg['part_out_path'])
 
+    gpt_markup = gpt_markup[gpt_markup['gpt_markup'] != 'gpt_markup']
+    gpt_markup.to_csv(cfg['part_out_path'], index=False)
+
     to_answer = []
 
     for i in tqdm(range(gpt_markup.shape[0])):

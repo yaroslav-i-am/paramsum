@@ -77,6 +77,6 @@ if __name__ == '__main__':
             'aspect': aspects_to_extract,
             'gpt_markup': gpt_markup
         })
-        out_markups_df.to_csv(cfg['out_path'], index=False, mode='a')
+        out_markups_df.to_csv(cfg['part_out_path'], index=False, mode='a')
 
     logger.debug(f'{N_REVIEWS_FROM_LABEL} - {N_REVIEWS_TO_LABEL} reviews have been requested to labelling.')
