@@ -163,4 +163,4 @@ data/
 cfg/yagpt_config.yaml
 cfg/telegram_config.yaml
 logs/
-*.gguf
+models/

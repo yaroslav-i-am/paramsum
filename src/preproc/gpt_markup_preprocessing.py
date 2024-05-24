@@ -45,7 +45,7 @@ if __name__ == '__main__':
     _job_name = "gpt_markup_preprocessing_job"
     config_name = "inference_config.yaml"
 
-    with initialize(version_base=_version, config_path="../cfg", job_name=_job_name):
+    with initialize(version_base=_version, config_path="../../cfg", job_name=_job_name):
         cfg = compose(config_name=config_name)
 
     print(OmegaConf.to_yaml(cfg))

@@ -37,7 +37,7 @@ from llama_cpp import Llama
 
 MODEL_NAME = "IlyaGusev/saiga_llama3_8b_gguf"
 model_params = {
-    'model_path': './src/model-q8_0.gguf',
+    'model_path': './models/model-q8_0.gguf',
     'n_ctx': 8192,
 }
 generation_params = {

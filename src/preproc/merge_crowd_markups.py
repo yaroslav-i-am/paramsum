@@ -12,7 +12,7 @@ from omegaconf import OmegaConf
 if __name__ == '__main__':
     _version = '1.1'
     _job_name = "merge_crowd_markups"
-    with initialize(version_base=_version, config_path="../cfg", job_name=_job_name):
+    with initialize(version_base=_version, config_path="../../cfg", job_name=_job_name):
         cfg = compose(config_name="config.yaml")
 
     print(OmegaConf.to_yaml(cfg))
