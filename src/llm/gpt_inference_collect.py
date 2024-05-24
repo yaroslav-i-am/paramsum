@@ -1,25 +1,21 @@
 import os
 from pathlib import Path
-from time import sleep
-from typing import Dict
 
 import pandas as pd
 from hydra import compose, initialize
 from loguru import logger
 from omegaconf import OmegaConf
-from tqdm import trange
 from tqdm.auto import tqdm
 
-from gpt_requests import gpt_async_request, gpt_answer
-from utils import get_topics
+from gpt_requests import gpt_answer
 
 if __name__ == '__main__':
     _version = '1.1'
     _job_name = "gpt_inference_recv"
-    with initialize(version_base=_version, config_path="../cfg", job_name=_job_name):
+    with initialize(version_base=_version, config_path="../../cfg", job_name=_job_name):
         cfg = compose(config_name="inference_config.yaml")
 
-    with initialize(version_base=_version, config_path="../cfg", job_name=_job_name):
+    with initialize(version_base=_version, config_path="../../cfg", job_name=_job_name):
         yagpt_cfg = compose(config_name="yagpt_config.yaml")
 
     print(OmegaConf.to_yaml(cfg))

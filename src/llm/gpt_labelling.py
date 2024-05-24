@@ -15,10 +15,10 @@ from utils import get_topics
 if __name__ == '__main__':
     _version = '1.1'
     _job_name = "gpt_markup_recv"
-    with initialize(version_base=_version, config_path="../cfg", job_name=_job_name):
+    with initialize(version_base=_version, config_path="../../cfg", job_name=_job_name):
         cfg = compose(config_name="config.yaml")
 
-    with initialize(version_base=_version, config_path="../cfg", job_name=_job_name):
+    with initialize(version_base=_version, config_path="../../cfg", job_name=_job_name):
         yagpt_cfg = compose(config_name="yagpt_config.yaml")
 
     print(OmegaConf.to_yaml(cfg))

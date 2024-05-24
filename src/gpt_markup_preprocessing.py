@@ -57,7 +57,6 @@ if __name__ == '__main__':
     )
     gpt_markup = pd.read_csv(cfg['silver_markup_path'])
 
-
     logger.debug(f'{gpt_markup.shape = }')
 
     if 'inference' in config_name:

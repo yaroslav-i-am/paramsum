@@ -10,6 +10,6 @@ def jaccard_distance(s1: str, s2: str) -> dict[str: float]:
 
 if __name__ == '__main__':
     str1 = 'Мама мыла раму'
-    str2 = 'Мама мыла рому'
+    str2 = 'Мама мыла Раму'
 
     print(jaccard_distance(str1, str2))

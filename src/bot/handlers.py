@@ -1,19 +1,16 @@
-import asyncio
 from pathlib import Path
 from random import choice
-from time import sleep
 from typing import Union, Dict
 
 import sys
 
 import pandas as pd
-from aiogram import types, F, Router
+from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReactionTypeEmoji
 from aiogram.filters import Command, StateFilter, CommandObject
-from aiogram.utils.markdown import hbold, hcode, hitalic, hblockquote
+from aiogram.utils.markdown import hbold, hcode, hblockquote
 from aiogram.utils.media_group import MediaGroupBuilder
-from hydra import initialize, compose
 from .utils import MarkupSession, make_special_gold_markup_path, cfg, tg_cfg
 from .text import *
 
@@ -21,7 +18,7 @@ from aiogram.types import FSInputFile
 
 import os
 
-from ..utils import get_topics
+from src.llm.utils import get_topics
 
 from loguru import logger
 
