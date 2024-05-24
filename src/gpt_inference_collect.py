@@ -52,7 +52,8 @@ if __name__ == '__main__':
         else:
             gpt_markup.iloc[i]['gpt_markup'] = answer
             if i % 100 == 0:
-                gpt_markup.to_csv(cfg['out_path'], index=False)
+                gpt_markup.to_csv(cfg['silver_markup_path'], index=False)
 
+    gpt_markup.to_csv(cfg['silver_markup_parsed_path'], index=False)
     os.remove(id_filename)
     print(*to_answer, sep='\n')
