@@ -11,7 +11,6 @@ from tqdm import trange
 from gpt_requests import gpt_async_request
 from utils import get_topics
 
-exit()
 
 if __name__ == '__main__':
     _version = '1.1'

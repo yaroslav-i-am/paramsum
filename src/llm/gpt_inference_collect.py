@@ -26,7 +26,6 @@ if __name__ == '__main__':
         encoding='UTF-8'
     )
 
-    id_filename = 'async_inference_ids.txt'
     gpt_markup = pd.read_csv(cfg['part_out_path'])
 
     gpt_markup = gpt_markup[gpt_markup['gpt_markup'] != 'gpt_markup']
@@ -54,5 +53,4 @@ if __name__ == '__main__':
                 gpt_markup.to_csv(cfg['silver_markup_path'], index=False)
 
     gpt_markup.to_csv(cfg['silver_markup_parsed_path'], index=False)
-    os.remove(id_filename)
     print(*to_answer, sep='\n')
