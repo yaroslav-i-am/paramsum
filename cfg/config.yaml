@@ -1,4 +1,5 @@
 reviews_path: 'data/clean_reviews.csv'
+
 model_type: 'gpt-finetuned'
 #model_type: 'gpt-lite'
 #model_type: 'saiga_mistral'
@@ -6,6 +7,7 @@ model_type: 'gpt-finetuned'
 #model_type: 'saiga_llama3-q4-K'
 #model_type: 'saiga_llama3-q8-0'
 #model_type: 'saiga_llama3-f16'
+
 project_dir: 'D:\Programming\Research\Thesis\paramsum'
 gold_markup_path: 'data/working_dir/ready_markup.csv'
 gold_markup_final_path: 'data/working_dir/crowd_markup.csv'
