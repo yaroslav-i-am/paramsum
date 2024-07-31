@@ -9,7 +9,7 @@
 * [Макет файловой системы проекта](https://drive.google.com/drive/folders/1z4hst8z1sYVfvjYgOvXWeTMWs90LAesS?usp=sharing)
 * [Разработанный набор данных](https://drive.google.com/file/d/1ZmOQbgS6DwtZbSxFSt5fVDO5JmRvC1BM/view?usp=sharing)
 
-* [Telegram-Бот для разметки данных (Активен)](https://t.me/py_markup_bot)
+* [Telegram-Бот для разметки данных](https://t.me/py_markup_bot)
 
 
 ## Список аспектов
